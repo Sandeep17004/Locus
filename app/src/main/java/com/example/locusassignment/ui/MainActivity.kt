@@ -3,7 +3,9 @@ package com.example.locusassignment.ui
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,10 +15,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.locusassignment.R
-import com.example.locusassignment.data.CommentModelClass
-import com.example.locusassignment.data.CustomDataItem
-import com.example.locusassignment.data.ItemDataType
-import com.example.locusassignment.data.PhotoModelClass
+import com.example.locusassignment.data.helper.CommentTypeHelperClass
+import com.example.locusassignment.data.CustomItemData
+import com.example.locusassignment.data.helper.PhotoTypeHelperClass
 import com.example.locusassignment.databinding.ActivityMainBinding
 import com.example.locusassignment.ui.adapter.ClickEventsHolder
 import com.example.locusassignment.ui.adapter.MainAdapter
@@ -30,9 +31,25 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
     private val mainViewModel by viewModel<MainViewModel>()
     private var tempUri: Uri? = null
     private var editableListPosition by Delegates.notNull<Int>()
-    private lateinit var list: ArrayList<CustomDataItem>
+    private lateinit var list: ArrayList<CustomItemData>
     private val mainAdapter = MainAdapter(this)
     private lateinit var getCameraImage: ActivityResultLauncher<Uri>
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.actionmenu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.submit -> {
+                Log.d("allUserData", mainAdapter.currentList.toString())
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +81,7 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
             registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
                 if (isSuccess) {
                     tempUri?.let { uri ->
-                        updateRow(PhotoModelClass(imageUri = uri), null)
+                        updateRow(PhotoTypeHelperClass(imageUri = uri), null)
                     }
                 }
             }
@@ -77,7 +94,7 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
         }
     }
 
-    private fun updateAdapter(response: ArrayList<CustomDataItem>?) {
+    private fun updateAdapter(response: ArrayList<CustomItemData>?) {
         mainAdapter.submitList(response)
     }
 
@@ -97,31 +114,31 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
     }
 
     private fun deleteDataFromAdapter() {
-        updateRow(PhotoModelClass(imageUri = null), null)
+        updateRow(PhotoTypeHelperClass(imageUri = null), null)
     }
 
     private fun updateRow(
-        photoModelClass: PhotoModelClass?,
-        commentModelClass: CommentModelClass?
+        photoTypeHelperClass: PhotoTypeHelperClass?,
+        commentTypeHelperClass: CommentTypeHelperClass?
     ) {
-        if (photoModelClass != null) {
+        if (photoTypeHelperClass != null) {
             val newList = ArrayList(mainAdapter.currentList.toMutableList())
-            if (photoModelClass.imageUri == null) {
-                val customDataItem = CustomDataItem(
-                    CustomDataItem.DataMap(
+            if (photoTypeHelperClass.imageUri == null) {
+                val customItemData = CustomItemData(
+                    CustomItemData.DataMap(
                         listOf(null)
                     ),
                     id = newList[editableListPosition].id,
                     title = newList[editableListPosition].title,
                     type = newList[editableListPosition].type
                 )
-                newList[editableListPosition] = customDataItem
+                newList[editableListPosition] = customItemData
                 updateAdapter(newList)
             } else {
-                val customDataItem = CustomDataItem(
-                    CustomDataItem.DataMap(
+                val customItemData = CustomItemData(
+                    CustomItemData.DataMap(
                         listOf(
-                            CustomDataItem.DataMap.OptionData(optionName = photoModelClass.imageUri.toString())
+                            CustomItemData.DataMap.OptionData(optionName = photoTypeHelperClass.imageUri.toString())
                         )
                     ),
                     id = newList[editableListPosition].id,
@@ -129,19 +146,20 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
                     type = newList[editableListPosition].type
                 )
 
-                newList[editableListPosition] = customDataItem
+                newList[editableListPosition] = customItemData
             }
             updateAdapter(newList)
         } else {
-            if (commentModelClass != null) {
+            if (commentTypeHelperClass != null) {
                 val newList = ArrayList(mainAdapter.currentList.toMutableList())
-                if (commentModelClass.isSelected) {
-                    val customDataItem = CustomDataItem(
-                        CustomDataItem.DataMap(
+                if (commentTypeHelperClass.isSelected) {
+                    val customItemData = CustomItemData(
+                        CustomItemData.DataMap(
                             listOf(
-                                CustomDataItem.DataMap.OptionData(
-                                    isSelected = commentModelClass.isSelected,
-                                    optionName = "", text = commentModelClass.comment.toString()
+                                CustomItemData.DataMap.OptionData(
+                                    isSelected = commentTypeHelperClass.isSelected,
+                                    optionName = "",
+                                    text = commentTypeHelperClass.comment.toString()
                                 )
                             )
                         ),
@@ -150,10 +168,10 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
                         type = newList[editableListPosition].type
                     )
 
-                    newList[editableListPosition] = customDataItem
+                    newList[editableListPosition] = customItemData
                 } else {
-                    val customDataItem = CustomDataItem(
-                        CustomDataItem.DataMap(
+                    val customItemData = CustomItemData(
+                        CustomItemData.DataMap(
                             listOf(
                                 null
                             )
@@ -162,7 +180,7 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
                         title = newList[editableListPosition].title,
                         type = newList[editableListPosition].type
                     )
-                    newList[editableListPosition] = customDataItem
+                    newList[editableListPosition] = customItemData
                 }
                 updateAdapter(newList)
             }
@@ -172,7 +190,7 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
 
     override fun onProvideCommentSelected(listPosition: Int, isSwitchedOn: Boolean) {
         editableListPosition = listPosition
-        updateRow(null, CommentModelClass(isSelected = isSwitchedOn))
+        updateRow(null, CommentTypeHelperClass(isSelected = isSwitchedOn))
     }
 
     override fun pickImageFromCamera(listPosition: Int) {
@@ -183,11 +201,8 @@ class MainActivity : AppCompatActivity(), ClickEventsHolder {
     override fun onCommentTextChanged(listPosition: Int, comment: String) {
         val newList = ArrayList(mainAdapter.currentList)
         val optionData =
-            CustomDataItem.DataMap.OptionData(optionName = "", isSelected = true, text = comment)
+            CustomItemData.DataMap.OptionData(optionName = "", isSelected = true, text = comment)
         newList[editableListPosition].dataMap.options = listOf(optionData)
         updateAdapter(newList)
-
-
-        //updateRow(null, CommentModelClass(comment = comment, isSelected = true))
     }
 }

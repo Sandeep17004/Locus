@@ -8,7 +8,7 @@
 
         <variable
             name="modelData"
-            type="com.example.locusassignment.data.CustomDataItem" />
+            type="com.example.locusassignment.data.CustomItemData" />
 
     </data>
 
@@ -34,7 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_8sdp"
-            android:text="Provide Comment"
+            android:text="@string/provide_comment"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvHolderTitle"
             app:switchPadding="@dimen/_20sdp" />
