@@ -1,3 +1,3 @@
 package com.example.locusassignment.di
 
-val KoinModule = listOf(ViewModelModule)
+val KoinModule = listOf(ViewModelModule, RepositoryModule)

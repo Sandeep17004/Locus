@@ -3,19 +3,18 @@ package com.example.locusassignment.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.example.locusassignment.data.CustomDataItem
+import com.example.locusassignment.data.DataMapper
 import com.example.locusassignment.data.ItemData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val itemList = MutableLiveData<List<ItemData>>()
+class MainViewModel(application: Application, private val dataMapper: DataMapper) :
+    AndroidViewModel(application) {
+    private val itemList = MutableLiveData<List<CustomDataItem>>()
 
-    fun getItemList(): MutableLiveData<List<ItemData>> {
+    fun getItemList(): MutableLiveData<List<CustomDataItem>> {
         return itemList
     }
 
@@ -32,6 +31,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val mockedResponseType = object : TypeToken<List<ItemData>>() {}.type
             val response =
                 gson.fromJson<List<ItemData>>(mockedResponseString, mockedResponseType)
+                    .map { dataMapper.toDomain(it) }
             itemList.value = response
         } catch (e: IOException) {
             e.printStackTrace()

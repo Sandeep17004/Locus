@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.example.locusassignment.data.ItemData
+import com.example.locusassignment.data.CustomDataItem
 import com.example.locusassignment.data.ItemDataType
 import com.example.locusassignment.databinding.AdapterTypeCommentBinding
 import com.example.locusassignment.databinding.AdapterTypePhotoBinding
@@ -15,9 +15,7 @@ import com.example.locusassignment.utils.Constants.TYPE_SINGLE_CHOICE
 import java.lang.RuntimeException
 
 class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
-    ListAdapter<ItemData, MainAdapterViewHolders>(DiffCallBack()) {
-    var selectedRadioButtonHashMao = HashMap<Int, Int>()
-
+    ListAdapter<CustomDataItem, MainAdapterViewHolders>(DiffCallBack()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainAdapterViewHolders {
         return when (viewType) {
             ItemDataType.Photo.itemType -> {
@@ -62,8 +60,7 @@ class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
                 clickEventsHolder, position
             )
             is MainAdapterViewHolders.SingleSelectionViewHolder -> holder.bind(
-                getItem(holder.absoluteAdapterPosition),
-                clickEventsHolder, position, selectedRadioButtonHashMao
+                getItem(holder.absoluteAdapterPosition)
             )
         }
     }
@@ -83,15 +80,15 @@ class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
         return ItemDataType.Undefined.itemType
     }
 
-    class DiffCallBack : DiffUtil.ItemCallback<ItemData>() {
-        override fun areItemsTheSame(oldItem: ItemData, newItem: ItemData): Boolean =
-            oldItem.id == newItem.id && oldItem.dataMap == newItem.dataMap && oldItem.type == newItem.type && oldItem == newItem
+    class DiffCallBack : DiffUtil.ItemCallback<CustomDataItem>() {
+        override fun areItemsTheSame(oldItem: CustomDataItem, newItem: CustomDataItem): Boolean =
+            oldItem.dataMap == newItem.dataMap
 
         override fun areContentsTheSame(
-            oldItem: ItemData,
-            newItem: ItemData
+            oldItem: CustomDataItem,
+            newItem: CustomDataItem
         ): Boolean =
-            oldItem.id == newItem.id && oldItem.dataMap == newItem.dataMap && oldItem.type == newItem.type
+            oldItem == newItem
     }
 
 }

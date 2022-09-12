@@ -6,7 +6,7 @@
 
         <variable
             name="modelData"
-            type="com.example.locusassignment.data.ItemData" />
+            type="com.example.locusassignment.data.CustomDataItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
