@@ -1,6 +1,6 @@
 package com.example.locusassignment.data
 
-data class CustomDataItem(
+data class CustomItemData(
     var dataMap: DataMap,
     val id: String?,
     val title: String?,

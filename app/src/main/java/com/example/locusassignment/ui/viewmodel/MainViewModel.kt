@@ -3,18 +3,18 @@ package com.example.locusassignment.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.example.locusassignment.data.CustomDataItem
-import com.example.locusassignment.data.DataMapper
-import com.example.locusassignment.data.ItemData
+import com.example.locusassignment.data.CustomItemData
+import com.example.locusassignment.data.mapper.CustomDataMapper
+import com.example.locusassignment.data.JsonItemData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
 
-class MainViewModel(application: Application, private val dataMapper: DataMapper) :
+class MainViewModel(application: Application, private val customDataMapper: CustomDataMapper) :
     AndroidViewModel(application) {
-    private val itemList = MutableLiveData<List<CustomDataItem>>()
+    private val itemList = MutableLiveData<List<CustomItemData>>()
 
-    fun getItemList(): MutableLiveData<List<CustomDataItem>> {
+    fun getItemList(): MutableLiveData<List<CustomItemData>> {
         return itemList
     }
 
@@ -28,10 +28,10 @@ class MainViewModel(application: Application, private val dataMapper: DataMapper
                 getApplication<Application>().assets.open("inputdata.json").bufferedReader()
                     .use { it.readText() }
             val gson = Gson()
-            val mockedResponseType = object : TypeToken<List<ItemData>>() {}.type
+            val mockedResponseType = object : TypeToken<List<JsonItemData>>() {}.type
             val response =
-                gson.fromJson<List<ItemData>>(mockedResponseString, mockedResponseType)
-                    .map { dataMapper.toDomain(it) }
+                gson.fromJson<List<JsonItemData>>(mockedResponseString, mockedResponseType)
+                    .map { customDataMapper.toDomain(it) }
             itemList.value = response
         } catch (e: IOException) {
             e.printStackTrace()

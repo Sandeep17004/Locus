@@ -1,17 +1,15 @@
 package com.example.locusassignment.ui.adapter
 
-import android.text.TextWatcher
 import android.view.View
 import android.widget.RadioButton
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.example.locusassignment.R
-import com.example.locusassignment.data.CustomDataItem
+import com.example.locusassignment.data.CustomItemData
 import com.example.locusassignment.databinding.AdapterTypeCommentBinding
 import com.example.locusassignment.databinding.AdapterTypePhotoBinding
 import com.example.locusassignment.databinding.AdapterTypeSingleSelectionBinding
@@ -20,7 +18,7 @@ sealed class MainAdapterViewHolders(binding: ViewBinding) : RecyclerView.ViewHol
 
     class PhotoViewHolder(private val binding: AdapterTypePhotoBinding) :
         MainAdapterViewHolders(binding) {
-        fun bind(data: CustomDataItem, clickEventsHolder: ClickEventsHolder, listPosition: Int) {
+        fun bind(data: CustomItemData, clickEventsHolder: ClickEventsHolder, listPosition: Int) {
             binding.apply {
                 modelData = data
                 ivHolderCancel.setOnClickListener {
@@ -33,8 +31,10 @@ sealed class MainAdapterViewHolders(binding: ViewBinding) : RecyclerView.ViewHol
                     Glide.with(binding.root.context)
                         .load(data.dataMap.options?.get(0)?.optionName?.toUri()).centerCrop()
                         .into(ivHolderImage)
+                    ivHolderCancel.visibility = View.VISIBLE
                 } else {
                     ivHolderImage.setImageBitmap(null)
+                    ivHolderCancel.visibility = View.GONE
                 }
             }
         }
@@ -43,7 +43,7 @@ sealed class MainAdapterViewHolders(binding: ViewBinding) : RecyclerView.ViewHol
     class SingleSelectionViewHolder(private val binding: AdapterTypeSingleSelectionBinding) :
         MainAdapterViewHolders(binding) {
         fun bind(
-            data: CustomDataItem
+            data: CustomItemData
         ) {
             binding.modelData = data
             data.dataMap.options?.let { options ->
@@ -79,7 +79,7 @@ sealed class MainAdapterViewHolders(binding: ViewBinding) : RecyclerView.ViewHol
 
     class CommentViewHolder(private val binding: AdapterTypeCommentBinding) :
         MainAdapterViewHolders(binding) {
-        fun bind(data: CustomDataItem, clickEventsHolder: ClickEventsHolder, listPosition: Int) {
+        fun bind(data: CustomItemData, clickEventsHolder: ClickEventsHolder, listPosition: Int) {
             binding.apply {
                 modelData = data
                 switchHolderComment.setOnCheckedChangeListener(null)
@@ -88,7 +88,11 @@ sealed class MainAdapterViewHolders(binding: ViewBinding) : RecyclerView.ViewHol
                         switchHolderComment.isChecked = true
                         tvHolderComment.apply {
                             visibility = View.VISIBLE
-                            setText(it[0]?.text ?: "")
+                            if (it[0]?.text.equals("null")) {
+                                setText("")
+                            } else {
+                                setText(it[0]?.text.toString())
+                            }
                         }
                     } else {
                         switchHolderComment.isChecked = false

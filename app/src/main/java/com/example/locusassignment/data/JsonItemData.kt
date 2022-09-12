@@ -2,7 +2,7 @@ package com.example.locusassignment.data
 
 import com.google.gson.annotations.SerializedName
 
-data class ItemData(
+data class JsonItemData(
     @SerializedName("dataMap")
     val dataMap: DataMap?,
     @SerializedName("id")

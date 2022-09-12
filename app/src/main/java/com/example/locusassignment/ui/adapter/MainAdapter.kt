@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.example.locusassignment.data.CustomDataItem
-import com.example.locusassignment.data.ItemDataType
+import com.example.locusassignment.data.CustomItemData
+import com.example.locusassignment.data.CustomItemViewType
 import com.example.locusassignment.databinding.AdapterTypeCommentBinding
 import com.example.locusassignment.databinding.AdapterTypePhotoBinding
 import com.example.locusassignment.databinding.AdapterTypeSingleSelectionBinding
@@ -15,10 +15,10 @@ import com.example.locusassignment.utils.Constants.TYPE_SINGLE_CHOICE
 import java.lang.RuntimeException
 
 class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
-    ListAdapter<CustomDataItem, MainAdapterViewHolders>(DiffCallBack()) {
+    ListAdapter<CustomItemData, MainAdapterViewHolders>(DiffCallBack()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainAdapterViewHolders {
         return when (viewType) {
-            ItemDataType.Photo.itemType -> {
+            CustomItemViewType.Photo.itemType -> {
                 MainAdapterViewHolders.PhotoViewHolder(
                     AdapterTypePhotoBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -27,7 +27,7 @@ class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
                     )
                 )
             }
-            ItemDataType.Comment.itemType -> {
+            CustomItemViewType.Comment.itemType -> {
                 MainAdapterViewHolders.CommentViewHolder(
                     AdapterTypeCommentBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -36,7 +36,7 @@ class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
                     )
                 )
             }
-            ItemDataType.SingleChoice.itemType -> {
+            CustomItemViewType.SingleChoice.itemType -> {
                 MainAdapterViewHolders.SingleSelectionViewHolder(
                     AdapterTypeSingleSelectionBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -71,22 +71,22 @@ class MainAdapter(private val clickEventsHolder: ClickEventsHolder) :
 
     private fun getDataHolderType(type: String): Int {
         if (type.equals(TYPE_PHOTO, true)) {
-            return ItemDataType.Photo.itemType
+            return CustomItemViewType.Photo.itemType
         } else if (type.equals(TYPE_SINGLE_CHOICE, true)) {
-            return ItemDataType.SingleChoice.itemType
+            return CustomItemViewType.SingleChoice.itemType
         } else if (type.equals(TYPE_COMMENT, true)) {
-            return ItemDataType.Comment.itemType
+            return CustomItemViewType.Comment.itemType
         }
-        return ItemDataType.Undefined.itemType
+        return CustomItemViewType.Undefined.itemType
     }
 
-    class DiffCallBack : DiffUtil.ItemCallback<CustomDataItem>() {
-        override fun areItemsTheSame(oldItem: CustomDataItem, newItem: CustomDataItem): Boolean =
+    class DiffCallBack : DiffUtil.ItemCallback<CustomItemData>() {
+        override fun areItemsTheSame(oldItem: CustomItemData, newItem: CustomItemData): Boolean =
             oldItem.dataMap == newItem.dataMap
 
         override fun areContentsTheSame(
-            oldItem: CustomDataItem,
-            newItem: CustomDataItem
+            oldItem: CustomItemData,
+            newItem: CustomItemData
         ): Boolean =
             oldItem == newItem
     }
